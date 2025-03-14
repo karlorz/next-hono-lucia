@@ -39,7 +39,7 @@ jobs:
       - name: Build step
         run: |
           cp .env.example .env
-          "pnpm build"
+          "pnpm run build"
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
