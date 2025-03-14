@@ -12,6 +12,7 @@ jobs:
     env:
       NEXT_PUBLIC_DOMAIN: ${{ secrets.NEXT_PUBLIC_DOMAIN }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      STANDALONE: 1
 
     permissions:
       id-token: write # Needed for auth with Deno Deploy
@@ -43,12 +44,11 @@ jobs:
       - name: Build step
         run: |
           cp .env.example .env
-          pnpm run build
+          pnpm run build && (cp -r public .next/standalone/public; cp -r .next/static .next/standalone/.next/static; mv .next/standalone/server.js .next/standalone/server.cjs)
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
           project: "karlorz-next-hono-l-12"
-          entrypoint: "jsr:@deno/nextjs-start"
-          root: "."
-          include: .next, public
+          entrypoint: "./server.cjs"
+          root: ".next/standalone"
